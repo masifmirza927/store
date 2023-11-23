@@ -1,0 +1,19 @@
+app.post('/users', async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    const savedUser = await newUser.save();
+    res.json(savedUser);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      // Mongoose validation error
+      const errors = {};
+      for (const field in error.errors) {
+        errors[field] = error.errors[field].message;
+      }
+      res.status(422).json({ errors });
+    } else {
+      // Other types of errors
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
