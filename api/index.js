@@ -3,12 +3,45 @@ const app = express();
 const cors = require("cors")
 const mongoose = require("mongoose");
 const Product = require("./models/Product");
+const fs = require('fs');
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 
 // middleware
 app.use(cors());
 app.use(express.json());
 
+
+app.post("/uploading", upload.single('image'), (req, res) => {
+    console.log(req.body);
+    console.log(req.file);
+
+    try {
+        const extension = req.file.mimetype.split("/")[1];
+        if (extension == "png" || extension == "jpg" || extension == "jpeg") {
+            const fileNmae = req.file.filename + "." + extension;
+            console.log(fileNmae);
+
+            fs.rename(req.file.path, `uploads/${fileNmae}`, () => {
+                console.log("\nFile Renamed!\n");
+            });
+            return res.json({
+                message: "uploaded"
+            })
+        } else {
+
+            fs.unlink(req.file.path, () => console.log("file deleted"))
+            return res.json({
+                message: "only images are accepted"
+            })
+        }
+
+        
+    } catch (error) {
+
+    }
+});
 
 app.get('/', (req, res) => {
 
@@ -66,17 +99,17 @@ app.post("/products", async (req, res) => {
             // Mongoose validation error
             const errors = {};
             for (const field in error.errors) {
-              errors[field] = error.errors[field].message;
+                errors[field] = error.errors[field].message;
             }
-            res.status(200).json({ 
+            res.status(200).json({
                 status: false,
-                errors: errors 
+                errors: errors
             });
-          } else {
+        } else {
             // Other types of errors
             res.status(500).json({ error: 'Internal Server Error' });
-          }
         }
+    }
 });
 
 // update product
@@ -97,13 +130,13 @@ app.put("/products/:id", async (req, res) => {
             // Mongoose validation error
             const errors = {};
             for (const field in error.errors) {
-              errors[field] = error.errors[field].message;
+                errors[field] = error.errors[field].message;
             }
             res.status(422).json({ errors });
-          } else {
+        } else {
             // Other types of errors
             res.status(500).json({ error: 'Internal Server Error' });
-          }
+        }
     }
 });
 
@@ -125,6 +158,7 @@ app.delete("/products/:id", async (req, res) => {
 });
 
 
+// server & DB connection
 mongoose.connect("mongodb://127.0.0.1:27017/pledgesdb").then(() => {
     app.listen(4000, () => {
         console.log("db connected and server is up now");
