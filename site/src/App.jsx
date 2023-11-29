@@ -16,6 +16,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Create from "./pages/dashboard/Create";
 import Edit from "./pages/dashboard/Edit";
 import Products from "./pages/dashboard/Products";
+import Upload from "./pages/Upload";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -75,6 +76,7 @@ function App() {
           path="/"
           element={<Home addToCart={addToCart} products={products} />}
         />
+        <Route path="/upload" element={<Upload />} />
         <Route path="/details/:pid" element={<Details />} />
         <Route
           path="/cart"

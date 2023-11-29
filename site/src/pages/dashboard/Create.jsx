@@ -9,6 +9,7 @@ function Create(props) {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors]  = useState(false);
+  const [image, setImage] = useState(null);
 
 
   const navigator = useNavigate();
@@ -31,11 +32,15 @@ function Create(props) {
     // if (name !== "" && price !== 0) {
     // create product
     setLoading(true);
-    axios
-      .post("http://localhost:4000/products", {
+    axios.post("http://localhost:4000/products", {
         name: name,
         price: price,
-        category: category
+        category: category,
+        image: image
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
       .then((res) => {
         console.log(res);
@@ -107,6 +112,19 @@ function Create(props) {
             <option value='Mobiles'>Mobiles</option>
           </select>
           { (errors.category) ?  <div className="alert alert-danger py-1 mt-1"> {errors.category}</div> : null}
+        </div>
+
+        <div className="mb-3">
+          <label id="image" className="text-start d-block font-bold">Image</label>
+          <input
+            type="file"
+            id="image"
+            onChange={(e) => {
+              setImage(e.target.files[0]);
+            }}
+            className="form-control"
+          />
+           { (errors.image) ?  <div className="alert alert-danger py-1 mt-1"> {errors.image}</div> : null}
         </div>
 
         <button

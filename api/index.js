@@ -6,11 +6,13 @@ const Product = require("./models/Product");
 const fs = require('fs');
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
+const path = require("path");
 
 
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 
 app.post("/uploading", upload.single('image'), (req, res) => {
@@ -85,9 +87,26 @@ app.get("/products/:id", async (req, res) => {
 })
 
 // create product
-app.post("/products", async (req, res) => {
+app.post("/products", upload.single('image'), async (req, res) => {
 
     try {
+        const extension = req.file.mimetype.split("/")[1];
+        if (extension == "png" || extension == "jpg" || extension == "jpeg") {
+            const fileNmae = req.file.filename + "." + extension;
+
+            // new key in body object
+            req.body.image = fileNmae;
+
+            fs.rename(req.file.path, `uploads/${fileNmae}`, () => {
+                console.log("\nFile Renamed!\n");
+            });
+        } else {
+            fs.unlink(req.file.path, () => console.log("file deleted"))
+            return res.json({
+                message: "only images are accepted"
+            })
+        }
+
         const newProduct = await Product.create(req.body);
         res.status(201).json({
             status: true,

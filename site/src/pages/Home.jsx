@@ -16,15 +16,15 @@ function Home(props) {
             ) : null}
             {props.products.map((element, index) => {
               return (
-                <div className="col-md-3 mb-3" key={element.id}>
+                <div className="col-md-3 mb-3" key={element._id}>
                   <div className="card">
                     <img
-                      src="https://picsum.photos/200/200"
+                      src={`http://127.0.0.1:4000/${element.image}`}
                       className="card-img-top"
                       alt="..."
                     />
                     <div className="card-body">
-                      <Link to={`/details/${element.id}`}>
+                      <Link to={`/details/${element._id}`}>
                         <h5 className="card-title">{element.name}</h5>
                       </Link>
 

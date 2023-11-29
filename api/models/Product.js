@@ -9,6 +9,9 @@ const schema = new mongoose.Schema({
         type: String,
         required: [true, "Product price is required"]
     },
+    image: {
+        type: String,
+    },
     category: {
         type: String,
         enum: { values: ['Shirts', 'Pents'], message: '{VALUE} is not supported' },
